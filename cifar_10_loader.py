@@ -40,10 +40,9 @@ model = VGG16(10, nn.ReLU()).cuda()
 #
 #print(MI)
 
-import torch.optim as optim
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.ADAM(model.parameters())
+optimizer = torch.optim.ADAM(model.parameters())
 
 for epoch in range(2):  # loop over the dataset multiple times
 
