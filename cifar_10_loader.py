@@ -57,7 +57,7 @@ for epoch in range(2):  # loop over the dataset multiple times
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs = model(inputs)
+        outputs, conv_layers = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
