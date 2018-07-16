@@ -42,7 +42,7 @@ model = VGG16(10, nn.ReLU()).cuda()
 
 
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.ADAM(model.parameters())
+optimizer = torch.optim.Adam(model.parameters())
 
 for epoch in range(2):  # loop over the dataset multiple times
 
