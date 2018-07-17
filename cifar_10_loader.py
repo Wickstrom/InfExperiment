@@ -50,18 +50,19 @@ for epoch in range(2):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
-        inputs = inputs.cuda()
-        labels = labels.cuda()
+        inputs_gpu = inputs.cuda()
+        labels_gpu = labels.cuda()
 
         # zero the parameter gradients
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs, conv_layers = model(inputs)
-        loss = criterion(outputs, labels)
+        outputs, conv_layers = model(inputs_gpu)
+        loss = criterion(outputs, labels_gpu)
         loss.backward()
-        optimizer.step()
+        print(model.mutual_information(inputs, conv_layers[i]))
 
-        print(loss)
+        if (i % 100) == 0:
+            print(loss)
 
 print('Finished Training')
