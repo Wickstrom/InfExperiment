@@ -31,7 +31,7 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU())
+model = VGG16(10, nn.ReLU()).cuda()
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
@@ -60,8 +60,8 @@ for epoch in range(5):
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs, conv_layers = model(inputs)
-        loss = criterion(outputs, labels)
+        outputs, conv_layers = model(inputs.cuda())
+        loss = criterion(outputs, labels.cuda())
         loss.backward()
         optimizer.step()
         
@@ -72,7 +72,7 @@ for epoch in range(5):
             print(model.renyi(inputs))
             for j in range(len(conv_layers)):
 #                print(model.mutual_information(inputs, conv_layers[j].cpu()))
-                print(model.renyi(conv_layers[j]))
+                print(model.renyi(conv_layers[j].cpu()))
                 
         
 
