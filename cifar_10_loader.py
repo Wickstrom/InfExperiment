@@ -70,7 +70,6 @@ for epoch in range(5):
             for j in range(len(conv_layers)):
                 print(model.mutual_information(inputs, conv_layers[j].cpu()))
                 
-            time.sleep(5)
         
 
 
