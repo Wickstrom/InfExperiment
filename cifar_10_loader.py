@@ -71,8 +71,10 @@ for epoch in range(5):
             print(i)
         if (i % 10) == 0:
             print("MI")
+            model.renyi(inputs)
             for j in range(len(conv_layers)):
-                print(model.mutual_information(inputs, conv_layers[j].cpu()))
+#                print(model.mutual_information(inputs, conv_layers[j].cpu()))
+                model.renyi(conv_layers[j])
                 
         
 
