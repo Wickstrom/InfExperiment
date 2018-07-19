@@ -31,7 +31,7 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU()).cuda()
+model = VGG16(10, nn.ReLU())
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
@@ -54,8 +54,8 @@ for epoch in range(5):
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
-        inputs_gpu = inputs.cuda()
-        labels_gpu = labels.cuda()
+        inputs_gpu = inputs
+        labels_gpu = labels
 
         # zero the parameter gradients
         optimizer.zero_grad()
