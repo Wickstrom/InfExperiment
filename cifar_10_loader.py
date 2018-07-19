@@ -52,6 +52,7 @@ for epoch in range(5):
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
+        
         # get the inputs
         inputs, labels = data
         inputs_gpu = inputs
@@ -65,7 +66,10 @@ for epoch in range(5):
         loss = criterion(outputs, labels_gpu)
         loss.backward()
         optimizer.step()
-        if (i % 50) == 0:
+        
+        if (i % 5) == 0:
+            print(i)
+        if (i % 10) == 0:
             print("MI")
             for j in range(len(conv_layers)):
                 print(model.mutual_information(inputs, conv_layers[j].cpu()))
@@ -73,7 +77,7 @@ for epoch in range(5):
         
 
 
-        if (i % 100) == 0:
+        if (i % 10) == 0:
             print('Loss')
             print(loss)
 
