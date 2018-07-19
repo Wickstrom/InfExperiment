@@ -164,7 +164,6 @@ class VGG16(nn.Module):
         x = squareform(pdist(x, 'euclidean'))
         sigma_x = np.mean(np.mean(np.sort(x[:, :10], 1)))
         x = scipy.exp(-x ** 2 / sigma_x ** 2)
-        print(sigma_x)
         return x
 
     def renyi(self, x):
@@ -177,7 +176,7 @@ class VGG16(nn.Module):
 
     def joint_renyi_conv(self, x):
         alpha = 1.01
-        length = np.random.choice(x.size(1), 5, replace=False)
+        length = np.random.choice(x.size(1), 15, replace=False)
         k = self.gram_matrix(x[:, 0, :, :])
         for i in range(len(length)):
             k = np.multiply(k, self.gram_matrix(x[:, length[i], :, :]))
@@ -189,7 +188,7 @@ class VGG16(nn.Module):
 
     def joint_renyi_all(self, x, y):
         alpha = 1.01
-        length = np.random.choice(y.size(1), 5, replace=False)
+        length = np.random.choice(y.size(1), 15, replace=False)
         k = self.gram_matrix(x)
         for i in range(len(length)):
             k = np.multiply(k, self.gram_matrix(y[:, length[i], :, :]))
