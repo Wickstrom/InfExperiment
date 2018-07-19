@@ -29,9 +29,9 @@ classes = ('plane', 'car', 'bird', 'cat',
 # get some random training images
 #dataiter = iter(trainloader)
 #images, labels = dataiter.next()
-#
-#from VGG16 import VGG16
-#model = VGG16(10, nn.ReLU())
+
+from VGG16 import VGG16
+model = VGG16(10, nn.ReLU())
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
