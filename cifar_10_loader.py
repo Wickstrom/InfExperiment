@@ -29,9 +29,9 @@ classes = ('plane', 'car', 'bird', 'cat',
 # get some random training images
 #dataiter = iter(trainloader)
 #images, labels = dataiter.next()
-
-from VGG16 import VGG16
-model = VGG16(10, nn.ReLU()).cuda()
+#
+#from VGG16 import VGG16
+#model = VGG16(10, nn.ReLU())
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
@@ -39,6 +39,8 @@ model = VGG16(10, nn.ReLU()).cuda()
 #    MI.append(model.mutual_information(images, conv_layers[i]))
 #
 #print(MI)
+
+# %%
 
 
 criterion = nn.CrossEntropyLoss()
@@ -50,8 +52,8 @@ for epoch in range(2):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
-        inputs_gpu = inputs.cuda()
-        labels_gpu = labels.cuda()
+        inputs_gpu = inputs
+        labels_gpu = labels
 
         # zero the parameter gradients
         optimizer.zero_grad()
@@ -60,8 +62,8 @@ for epoch in range(2):  # loop over the dataset multiple times
         outputs, conv_layers = model(inputs_gpu)
         loss = criterion(outputs, labels_gpu)
         loss.backward()
-	for j in range(len(conv_layers)):
-        	print(model.mutual_information(inputs, conv_layers[j].cpu()))
+        optimizer.step()
+        print(model.mutual_information(inputs, conv_layers[i]))
 
         if (i % 100) == 0:
             print(loss)
