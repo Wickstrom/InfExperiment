@@ -71,10 +71,10 @@ for epoch in range(5):
             print(i)
         if (i % 10) == 0:
             print("MI")
-            print(model.renyi(inputs))
+            print(model.gram_matrix(inputs))
             for j in range(len(conv_layers)):
 #                print(model.mutual_information(inputs, conv_layers[j].cpu()))
-                print(model.renyi(conv_layers[j]))
+                print(model.gram_matrix(conv_layers[j]))
                 
         
 
