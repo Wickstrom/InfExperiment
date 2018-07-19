@@ -42,6 +42,8 @@ model = VGG16(10, nn.ReLU()).cuda()
 
 # %%
 
+import time
+
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
@@ -63,8 +65,11 @@ for epoch in range(2):  # loop over the dataset multiple times
         loss = criterion(outputs, labels_gpu)
         loss.backward()
         optimizer.step()
-        for j in range(len(conv_layers)):
-            print(model.mutual_information(inputs, conv_layers[j].cpu()))
+        if (i % 50) == 0:
+            for j in range(len(conv_layers)):
+                print(model.mutual_information(inputs, conv_layers[j].cpu()))
+        
+        time.sleep(5)
 
         if (i % 100) == 0:
             print(loss)
