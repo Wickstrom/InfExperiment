@@ -55,15 +55,13 @@ for epoch in range(5):
         
         # get the inputs
         inputs, labels = data
-        inputs_gpu = inputs
-        labels_gpu = labels
 
         # zero the parameter gradients
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs, conv_layers = model(inputs_gpu)
-        loss = criterion(outputs, labels_gpu)
+        outputs, conv_layers = model(inputs)
+        loss = criterion(outputs, labeles)
         loss.backward()
         optimizer.step()
         
