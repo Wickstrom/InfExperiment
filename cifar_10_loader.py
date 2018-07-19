@@ -66,6 +66,7 @@ for epoch in range(5):
         loss.backward()
         optimizer.step()
         if (i % 50) == 0:
+            print("MI")
             for j in range(len(conv_layers)):
                 print(model.mutual_information(inputs, conv_layers[j].cpu()))
                 time.sleep(5)
@@ -73,6 +74,7 @@ for epoch in range(5):
 
 
         if (i % 100) == 0:
+            print('Loss')
             print(loss)
 
 print('Finished Training')
