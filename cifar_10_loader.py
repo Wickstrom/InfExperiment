@@ -63,7 +63,8 @@ for epoch in range(2):  # loop over the dataset multiple times
         loss = criterion(outputs, labels_gpu)
         loss.backward()
         optimizer.step()
-        print(model.mutual_information(inputs, conv_layers[i].cpu()))
+        for j in range(len(conv_layers)):
+            print(model.mutual_information(inputs, conv_layers[j].cpu()))
 
         if (i % 100) == 0:
             print(loss)
