@@ -31,7 +31,7 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU())
+model = VGG16(10, nn.ReLU()).cuda()
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
@@ -52,8 +52,8 @@ for epoch in range(2):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
-        inputs_gpu = inputs
-        labels_gpu = labels
+        inputs_gpu = inputs.cuda()
+        labels_gpu = labels.cuda()
 
         # zero the parameter gradients
         optimizer.zero_grad()
@@ -63,7 +63,7 @@ for epoch in range(2):  # loop over the dataset multiple times
         loss = criterion(outputs, labels_gpu)
         loss.backward()
         optimizer.step()
-        print(model.mutual_information(inputs, conv_layers[i]))
+        print(model.mutual_information(inputs, conv_layers[i]).cpu())
 
         if (i % 100) == 0:
             print(loss)
