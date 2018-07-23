@@ -42,8 +42,6 @@ model = VGG16(10, nn.ReLU()).cuda()
 
 # %%
 
-import time
-
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
@@ -72,8 +70,8 @@ for epoch in range(5):
             print(model.renyi(inputs))
             for j in range(len(conv_layers)):
 #                print(model.mutual_information(inputs, conv_layers[j].cpu()))
-                print(model.renyi(conv_layers[j].cpu()))
-                time.wait(10)
+                 print(model.renyi(conv_layers[j].cpu()))
+                
                 
         
 
