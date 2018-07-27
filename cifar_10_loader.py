@@ -30,7 +30,7 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU())
+model = VGG16(10, nn.ReLU()).cuda()
 #out, conv_layers = model(images)
 #MI = []
 #for i in range(len(conv_layers)):
