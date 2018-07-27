@@ -100,6 +100,6 @@ for epoch in range(5):
             for layers1 in conv_layers:
                 print(model.mutual_information(inputs, layers1.cpu()))
                 for layers2 in conv_layers:
-                    print(model.mutual_information(layers1, layers2.cpu()))
+                    print(model.mutual_information(layers1.cpu(), layers2.cpu()))
 
 print('Finished Training')
