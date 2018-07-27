@@ -73,13 +73,13 @@ for epoch in range(5):
         loss.backward()
         optimizer.step()
         
-        if (i % 5) == 0:
-            print(i)
-        if (i % 10) == 0:
-            print("MI")
-            print(model.renyi(inputs))
-            for j in range(len(conv_layers)):
-                print(model.mutual_information(inputs, conv_layers[j].cpu()))
+#        if (i % 5) == 0:
+#            print(i)
+#        if (i % 10) == 0:
+#            print("MI")
+#            print(model.renyi(inputs))
+#            for j in range(len(conv_layers)):
+#                print(model.mutual_information(inputs, conv_layers[j].cpu()))
 #                 print(model.renyi(conv_layers[j].cpu()))
                 
                 
