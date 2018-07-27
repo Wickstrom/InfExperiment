@@ -168,7 +168,9 @@ class VGG16(nn.Module):
 
     def renyi(self, x):
         alpha = 1.01
+        print(x.size(0))
         N = 1/x.size(0)
+        print(N)
         gram_m = self.gram_matrix(x)
         l, v = LA.eig(gram_m)
         lambda_x = np.abs(l)
