@@ -162,8 +162,8 @@ class VGG16(nn.Module):
 #        sigma_x = 5*x.size(0)**(-1/(x.size(1)*x.size(2)))
         x = x.view(x.size(0), -1).data.numpy()
         x = squareform(pdist(x, 'euclidean'))
-        sigma_x = np.mean(np.mean(np.sort(x[:, :10], 1)))
-        x = (1/x.shape[0])*scipy.exp(-x ** 2 / sigma_x ** 2)
+#        sigma_x = np.mean(np.mean(np.sort(x[:, :10], 1)))
+#        x = (1/x.shape[0])*scipy.exp(-x ** 2 / sigma_x ** 2)
         return x
 
     def renyi(self, x):
