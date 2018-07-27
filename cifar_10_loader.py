@@ -65,7 +65,7 @@ for i in range(16):
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 
-for epoch in range(10):
+for epoch in range(2):
     print('Epoch: ', epoch)
     dataiter = iter(testloader)
     inputs, labels = dataiter.next()
