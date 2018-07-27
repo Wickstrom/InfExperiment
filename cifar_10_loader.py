@@ -25,20 +25,15 @@ classes = ('plane', 'car', 'bird', 'cat',
 
 # %%
 
-
+import numpy as np
 #dataiter = iter(trainloader)
 #images, labels = dataiter.next()
 
+
 from VGG16 import VGG16
 model = VGG16(10, nn.ReLU()).cuda()
-#out, conv_layers = model(images)
-#
-#MI = []
-#for i in range(len(conv_layers)):
-#
-#    MI.append(model.mutual_information(images, conv_layers[i]))
-#
-#print(MI)
+#out, layers = model(images)
+
 
 # %%
 
@@ -69,7 +64,7 @@ for epoch in range(5):
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs, conv_layers = model(inputs.cuda())
+        outputs, layers = model(inputs.cuda())
         loss = criterion(outputs, labels.cuda())
         loss.backward()
         optimizer.step()
@@ -89,7 +84,7 @@ for epoch in range(5):
         
 
 
-        if (i % 100) == 0:
+        if (i % 100 and i != 0) == 0:
             print('Loss')
             print(loss)
 #            dataiter = iter(testloader)
@@ -97,9 +92,16 @@ for epoch in range(5):
 #            outputs, test_conv= model(images.cuda())
 #            _, predicted = torch.max(outputs, 1)
 #            print((predicted == labels.cuda()).sum().item())
-            for layers1 in conv_layers:
-                print(model.mutual_information(inputs, layers1.cpu()))
-                for layers2 in conv_layers:
-                    print(model.mutual_information(layers1.cpu(), layers2.cpu()))
+
+            mi_mat = np.zeros((17,17))
+            
+            for i, layer in enumerate(layers, 0):
+                
+                mi_mat[0, 0] = model.mutual_information(inputs, inputs)    
+                mi_mat[0, i+1] = model.mutual_information(inputs, layer.cpu())
+            
+            for i in range(16):
+                for j in range(i,16):
+                    mi_mat[i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
 
 print('Finished Training')

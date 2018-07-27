@@ -79,38 +79,39 @@ class VGG16(nn.Module):
                    nn.BatchNorm2d(512),
                    activation, ]))
         self.pool5 = nn.MaxPool2d(2, 2)
+        
+        self.fc1 = nn.Sequential(*([
+                nn.Dropout(),
+                nn.Linear(512, 4096),
+                activation,]))
+        self.fc2 = nn.Sequential(*([
+                nn.Dropout(),
+                nn.Linear(4096, 4096),
+                activation,]))
+        self.classifier = nn.Sequential(*([
+                nn.Linear(4096, num_classes),]))
 
-        # Classifier
-        self.classifier = nn.Sequential(
-            nn.Dropout(),
-            nn.Linear(512, 4096),
-            activation,
-            nn.Dropout(),
-            nn.Linear(4096, 4096),
-            activation,
-            nn.Linear(4096, num_classes),
-            )
         for m in self.modules():
             self.weight_init(m)
 
     def forward(self, x):                           # Forward pass for network.
 
-        conv_layers = []
+        layers = []
         # Encoder 1
         layer1 = self.layer1(x)
         layer2 = self.layer2(layer1)
         pool1 = self.pool1(layer2)
 
-        conv_layers.append(layer1)
-        conv_layers.append(layer2)
+        layers.append(layer1)
+        layers.append(layer2)
 
         # Encoder 2
         layer3 = self.layer3(pool1)
         layer4 = self.layer4(layer3)
         pool2 = self.pool2(layer4)
 
-        conv_layers.append(layer3)
-        conv_layers.append(layer4)
+        layers.append(layer3)
+        layers.append(layer4)
 
         # Encoder 3
         layer5 = self.layer5(pool2)
@@ -118,9 +119,9 @@ class VGG16(nn.Module):
         layer7 = self.layer7(layer6)
         pool3 = self.pool3(layer7)
 
-        conv_layers.append(layer5)
-        conv_layers.append(layer6)
-        conv_layers.append(layer7)
+        layers.append(layer5)
+        layers.append(layer6)
+        layers.append(layer7)
 
         # Encoder 4
         layer8 = self.layer8(pool3)
@@ -128,9 +129,9 @@ class VGG16(nn.Module):
         layer10 = self.layer10(layer9)
         pool4 = self.pool4(layer10)
 
-        conv_layers.append(layer8)
-        conv_layers.append(layer9)
-        conv_layers.append(layer10)
+        layers.append(layer8)
+        layers.append(layer9)
+        layers.append(layer10)
 
         # Encoder 5
         layer11 = self.layer11(pool4)
@@ -138,14 +139,21 @@ class VGG16(nn.Module):
         layer13 = self.layer13(layer12)
         pool5 = self.pool4(layer13)
 
-        conv_layers.append(layer11)
-        conv_layers.append(layer12)
-        conv_layers.append(layer13)
+        layers.append(layer11)
+        layers.append(layer12)
+        layers.append(layer13)
 
         # Classifier
-        out = pool5.view(pool5.size(0), -1)
 
-        return self.classifier(out), conv_layers
+        fc1 = self.fc1(pool5.view(pool5.size(0), -1))
+        fc2 = self.fc2(fc1)
+        classifier = self.classifier(fc2)
+
+        layers.append(fc1)
+        layers.append(fc2)
+        layers.append(classifier)
+
+        return classifier, layers
 
     def weight_init(self, m):
         if isinstance(m, nn.Conv2d):
@@ -187,6 +195,17 @@ class VGG16(nn.Module):
 
         return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
+    def joint_renyi_fc(self, x, y):
+        alpha = 1.01
+        k_x = self.gram_matrix(x)
+        k_y = self.gram_matrix(y)
+        k = np.multiply(k_x, k_y)
+        k = k / np.float32(np.trace(k))
+        l, v = LA.eig(k)
+        lambda_x = np.abs(l)
+
+        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+
     def joint_renyi_all(self, x, y):
         alpha = 1.01
         k = self.gram_matrix(x)
@@ -199,6 +218,13 @@ class VGG16(nn.Module):
         return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def mutual_information(self, x, y):
-        return (self.renyi(x) +
-                self.joint_renyi_conv(y) -
-                self.joint_renyi_all(x, y))
+
+        if y.dim() == 4:
+            return (self.renyi(x) +
+                    self.joint_renyi_conv(y) -
+                    self.joint_renyi_all(x, y))
+
+        if y.dim() == 2:
+            return (self.renyi(x) +
+                    self.renyi(x) -
+                    self.joint_renyi_fc(x, y))
