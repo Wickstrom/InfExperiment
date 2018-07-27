@@ -178,7 +178,7 @@ class VGG16(nn.Module):
     def joint_renyi_conv(self, x):
         alpha = 1.01
         k = self.gram_matrix(x[:, 0, :, :])
-        for i in range(3):
+        for i in range(x.size(1)-1):
             k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
             k = k / np.float32(np.trace(k))
         l, v = LA.eig(k)
@@ -190,7 +190,7 @@ class VGG16(nn.Module):
         alpha = 1.01
         N = 1/np.float32(x.size(0))
         k = self.gram_matrix(x)
-        for i in range(3):
+        for i in range(y.size(1)):
             k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
             k = k / np.trace(k)
         l, v = LA.eig(k)
