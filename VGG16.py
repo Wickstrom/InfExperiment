@@ -177,19 +177,18 @@ class VGG16(nn.Module):
 
     def joint_renyi_conv(self, x):
         alpha = 1.01
-        #length = np.random.choice(x.size(1), 15, replace=False)
         k = self.gram_matrix(x[:, 0, :, :])
         for i in range(3):
             k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
-            k = k / np.trace(k)
+            k = k / np.float32(np.trace(k))
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
 
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return k#(1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def joint_renyi_all(self, x, y):
         alpha = 1.01
-        #length = np.random.choice(y.size(1), 15, replace=False)
+        N = 1/np.float32(x.size(0))
         k = self.gram_matrix(x)
         for i in range(3):
             k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
