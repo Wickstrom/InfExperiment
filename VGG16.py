@@ -163,7 +163,7 @@ class VGG16(nn.Module):
         x = x.view(x.size(0), -1).data.numpy()
         x = squareform(pdist(x, 'euclidean'))
         sigma_x = np.mean(np.mean(np.sort(x[:, :10], 1)))
-        x = N*scipy.exp(-x ** 2 / sigma_x ** 2)
+        x = scipy.exp(-x ** 2 / sigma_x ** 2)
         return x
 
     def renyi(self, x):
