@@ -91,10 +91,14 @@ for epoch in range(5):
         if (i % 100) == 0:
             print('Loss')
             print(loss)
+            print('her?')
             dataiter = iter(testloader)
+            print('eller her?')
             images, labels = dataiter.next()
+            print('eller 2her?')
             outputs, conv_layers = model(images.cuda())
             _, predicted = torch.max(outputs, 1)
+            print('eller 3her?')
             print((predicted == labels.cuda()).sum().item())
 
 print('Finished Training')
