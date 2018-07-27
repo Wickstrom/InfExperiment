@@ -26,18 +26,18 @@ classes = ('plane', 'car', 'bird', 'cat',
 # %%
 
 
-dataiter = iter(trainloader)
-images, labels = dataiter.next()
+#dataiter = iter(trainloader)
+#images, labels = dataiter.next()
 
 from VGG16 import VGG16
 model = VGG16(10, nn.ReLU())
-out, conv_layers = model(images)
-MI = []
-for i in range(len(conv_layers)):
-
-    MI.append(model.mutual_information(images, conv_layers[i]))
-
-print(MI)
+#out, conv_layers = model(images)
+#MI = []
+#for i in range(len(conv_layers)):
+#
+#    MI.append(model.mutual_information(images, conv_layers[i]))
+#
+#print(MI)
 
 # %%
 
