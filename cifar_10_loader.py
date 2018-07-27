@@ -96,5 +96,7 @@ for epoch in range(5):
             outputs, conv_layers = model(images.cuda())
             _, predicted = torch.max(outputs, 1)
             print((predicted == labels.cuda()).sum().item())
+            for layers in conv_layers:
+                print(model.renyi(layers[:,0,:,:]))
 
 print('Finished Training')
