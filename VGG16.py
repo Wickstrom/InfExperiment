@@ -158,7 +158,7 @@ class VGG16(nn.Module):
             init.constant_(m.bias.data, 0)
 
     def gram_matrix(self, x):
-        n = (1/x.size(0))
+        N = (1/x.size(0))
 #        sigma_x = 5*x.size(0)**(-1/(x.size(1)*x.size(2)))
         x = x.view(x.size(0), -1).data.numpy()
         x = squareform(pdist(x, 'euclidean'))
