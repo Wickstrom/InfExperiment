@@ -168,14 +168,12 @@ class VGG16(nn.Module):
 
     def renyi(self, x):
         alpha = 1.01
-        print(x.size(0))
         N = 1/np.float32(x.size(0))
-        print(N)
-        gram_m = self.gram_matrix(x)
+        gram_m = N*self.gram_matrix(x)
         l, v = LA.eig(gram_m)
         lambda_x = np.abs(l)
 
-        return N*gram_m, N#(1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def joint_renyi_conv(self, x):
         alpha = 1.01
