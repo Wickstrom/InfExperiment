@@ -81,13 +81,20 @@ for epoch in range(5):
 #            for j in range(len(conv_layers)):
 #                print(model.mutual_information(inputs, conv_layers[j].cpu()))
 #                 print(model.renyi(conv_layers[j].cpu()))
+        
+
                 
                 
         
 
 
-        if (i % 10) == 0:
+        if (i % 100) == 0:
             print('Loss')
             print(loss)
+            dataiter = iter(testloader)
+            images, labels = dataiter.next()
+            outputs = model(images.cuda())
+            _, predicted = torch.max(outputs, 1)
+            print((predicted == labels).sum().item())
 
 print('Finished Training')
