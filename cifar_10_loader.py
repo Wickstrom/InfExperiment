@@ -93,7 +93,7 @@ for epoch in range(5):
             print(loss)
             dataiter = iter(testloader)
             images, labels = dataiter.next()
-            outputs, conv_layers = model(images.cuda())
+            outputs, test_conv= model(images.cuda())
             _, predicted = torch.max(outputs, 1)
             print((predicted == labels.cuda()).sum().item())
             for layers in conv_layers:
