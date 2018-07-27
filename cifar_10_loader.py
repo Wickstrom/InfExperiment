@@ -103,5 +103,5 @@ for epoch in range(5):
             for i in range(16):
                 for j in range(i,16):
                     mi_mat[i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
-
+            print(mi_mat)
 print('Finished Training')
