@@ -12,7 +12,7 @@ transform = transforms.Compose(
 
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=20,
                                           shuffle=True, num_workers=2)
 
 testset = torchvision.datasets.CIFAR10(root='./data', train=False,
@@ -26,19 +26,29 @@ classes = ('plane', 'car', 'bird', 'cat',
 # %%
 
 
-# get some random training images
-#dataiter = iter(trainloader)
-#images, labels = dataiter.next()
+dataiter = iter(trainloader)
+images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU()).cuda()
-#out, conv_layers = model(images)
-#MI = []
-#for i in range(len(conv_layers)):
+model = VGG16(10, nn.ReLU())
+out, conv_layers = model(images)
+MI = []
+for i in range(len(conv_layers)):
+
+    MI.append(model.mutual_information(images, conv_layers[i]))
+
+print(MI)
+
+# %%
+
+#x = conv_layers[0]
+#k = model.gram_matrix(x[:, 0, :, :])
 #
-#    MI.append(model.mutual_information(images, conv_layers[i]))
-#
-#print(MI)
+#for i in range(x.size(1)-1):
+#    k = np.multiply(k, model.gram_matrix(x[:, i+1, :, :]))
+#    k = k /np.trace(k)
+#l, v = LA.eig(k)
+#lambda_x = np.abs(l)
 
 # %%
 
@@ -69,8 +79,8 @@ for epoch in range(5):
             print("MI")
             print(model.renyi(inputs))
             for j in range(len(conv_layers)):
-#                print(model.mutual_information(inputs, conv_layers[j].cpu()))
-                 print(model.renyi(conv_layers[j].cpu()))
+                print(model.mutual_information(inputs, conv_layers[j].cpu()))
+#                 print(model.renyi(conv_layers[j].cpu()))
                 
                 
         

@@ -170,20 +170,17 @@ class VGG16(nn.Module):
         alpha = 1.01
         gram_m = self.gram_matrix(x)
         l, v = LA.eig(gram_m)
-        print(l)
         lambda_x = np.abs(l)
-        print(lambda_x)
-        
 
         return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def joint_renyi_conv(self, x):
         alpha = 1.01
-        length = np.random.choice(x.size(1), 15, replace=False)
+        #length = np.random.choice(x.size(1), 15, replace=False)
         k = self.gram_matrix(x[:, 0, :, :])
-        for i in range(len(length)):
-            k = np.multiply(k, self.gram_matrix(x[:, length[i], :, :]))
-#            k = k / np.trace(k)
+        for i in range(x.size(1)):
+            k = np.multiply(k, self.gram_matrix(x[:, i, :, :]))
+            k = k / np.trace(k)
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
 
@@ -191,11 +188,11 @@ class VGG16(nn.Module):
 
     def joint_renyi_all(self, x, y):
         alpha = 1.01
-        length = np.random.choice(y.size(1), 15, replace=False)
+        #length = np.random.choice(y.size(1), 15, replace=False)
         k = self.gram_matrix(x)
-        for i in range(len(length)):
-            k = np.multiply(k, self.gram_matrix(y[:, length[i], :, :]))
-#        k = k / np.trace(k)
+        for i in range(y.size(1)):
+            k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
+            k = k / np.trace(k)
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
 
