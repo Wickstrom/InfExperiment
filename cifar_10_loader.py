@@ -30,8 +30,9 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU()).cuda()
+model = VGG16(10, nn.ReLU())
 #out, conv_layers = model(images)
+#
 #MI = []
 #for i in range(len(conv_layers)):
 #
@@ -97,6 +98,6 @@ for epoch in range(5):
             _, predicted = torch.max(outputs, 1)
             print((predicted == labels.cuda()).sum().item())
             for layers in conv_layers:
-                print(model.joint_renyi_conv(layers.cpu()))
+                print(model.mutual_information(layers.cpu()))
 
 print('Finished Training')

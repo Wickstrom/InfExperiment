@@ -2,6 +2,7 @@ import scipy
 import torch
 import numpy as np
 import torch.nn as nn
+from time import sleep
 import torch.nn.init as init
 from numpy import linalg as LA
 import torch.nn.functional as F
@@ -180,19 +181,18 @@ class VGG16(nn.Module):
         k = self.gram_matrix(x[:, 0, :, :])
         for i in range(x.size(1)-1):
             k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
-            k = k / np.float32(np.trace(k))
+        k = k / np.float32(np.trace(k))
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
 
-        return k#(1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def joint_renyi_all(self, x, y):
         alpha = 1.01
-        N = 1/np.float32(x.size(0))
         k = self.gram_matrix(x)
         for i in range(y.size(1)):
             k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
-            k = k / np.trace(k)
+        k = k / np.float32(np.trace(k))
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
 
