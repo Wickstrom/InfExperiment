@@ -12,7 +12,7 @@ transform = transforms.Compose(
 
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=300,
                                           shuffle=True, num_workers=2)
 
 testset = torchvision.datasets.CIFAR10(root='./data', train=False,
@@ -48,15 +48,45 @@ model = VGG16(10, nn.ReLU()).cuda()
 
 # %%
 
+mi_mat = np.zeros((1, 17, 17))
+dataiter = iter(testloader)
+inputs, labels = dataiter.next()
+outputs, layers = model(inputs.cuda())
+
+for i, layer in enumerate(layers, 0):
+
+    mi_mat[0, 0, 0] = model.mutual_information(inputs, inputs)
+    mi_mat[0, 0, i+1] = model.mutual_information(inputs, layer.cpu())
+
+for i in range(16):
+    for j in range(i,16):
+        mi_mat[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 
-for epoch in range(5):
+for epoch in range(10):
     print('Epoch: ', epoch)
-    running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    dataiter = iter(testloader)
+    inputs, labels = dataiter.next()
+    outputs, layers = model(inputs.cuda())
+
+    mi_mat_temp = np.zeros((1, 17, 17))
+    
+    for i, layer in enumerate(layers, 0):
         
+        mi_mat_temp[0, 0, 0] = model.mutual_information(inputs, inputs)    
+        mi_mat_temp[0, 0, i+1] = model.mutual_information(inputs, layer.cpu())
+    
+    for i in range(16):
+        for j in range(i,16):
+            mi_mat_temp[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
+            
+    if epoch != 0:
+        mi_mat = np.concatenate((mi_mat, mi_mat_temp))
+
+    for i, data in enumerate(trainloader, 0):
+
         # get the inputs
         inputs, labels = data
 
@@ -68,40 +98,7 @@ for epoch in range(5):
         loss = criterion(outputs, labels.cuda())
         loss.backward()
         optimizer.step()
-        
-#        if (i % 5) == 0:
-#            print(i)
-#        if (i % 10) == 0:
-#            print("MI")
-#            print(model.renyi(inputs))
-#            for j in range(len(conv_layers)):
-#                print(model.mutual_information(inputs, conv_layers[j].cpu()))
-#                 print(model.renyi(conv_layers[j].cpu()))
-        
-
-                
-                
-        
 
 
-        if (i % 100 and i != 0) == 0:
-            print('Loss')
-            print(loss)
-#            dataiter = iter(testloader)
-#            images, labels = dataiter.next()
-#            outputs, test_conv= model(images.cuda())
-#            _, predicted = torch.max(outputs, 1)
-#            print((predicted == labels.cuda()).sum().item())
-
-            mi_mat = np.zeros((17,17))
-            
-            for i, layer in enumerate(layers, 0):
-                
-                mi_mat[0, 0] = model.mutual_information(inputs, inputs)    
-                mi_mat[0, i+1] = model.mutual_information(inputs, layer.cpu())
-            
-            for i in range(16):
-                for j in range(i,16):
-                    mi_mat[i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
-            print(mi_mat)
 print('Finished Training')
+np.savez_compressed('MI_cifar_10', a=mi_mat)
