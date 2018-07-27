@@ -178,11 +178,12 @@ class VGG16(nn.Module):
         alpha = 1.01
         #length = np.random.choice(x.size(1), 15, replace=False)
         k = self.gram_matrix(x[:, 0, :, :])
-        for i in range(x.size(1)):
-            k = np.multiply(k, self.gram_matrix(x[:, i, :, :]))
+        for i in range(x.size(1)-1):
+            k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
             k = k / np.trace(k)
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
+        print(lambda_x)
 
         return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
