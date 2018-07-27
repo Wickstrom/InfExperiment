@@ -92,11 +92,11 @@ for epoch in range(5):
         if (i % 100) == 0:
             print('Loss')
             print(loss)
-            dataiter = iter(testloader)
-            images, labels = dataiter.next()
-            outputs, test_conv= model(images.cuda())
-            _, predicted = torch.max(outputs, 1)
-            print((predicted == labels.cuda()).sum().item())
+#            dataiter = iter(testloader)
+#            images, labels = dataiter.next()
+#            outputs, test_conv= model(images.cuda())
+#            _, predicted = torch.max(outputs, 1)
+#            print((predicted == labels.cuda()).sum().item())
             for layers in conv_layers:
                 print(model.mutual_information(images, layers.cpu()))
 
