@@ -178,7 +178,7 @@ class VGG16(nn.Module):
         alpha = 1.01
         #length = np.random.choice(x.size(1), 15, replace=False)
         k = self.gram_matrix(x[:, 0, :, :])
-        for i in range(x.size(1)-1):
+        for i in range(3):
             k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
             k = k / np.trace(k)
         l, v = LA.eig(k)
@@ -191,7 +191,7 @@ class VGG16(nn.Module):
         alpha = 1.01
         #length = np.random.choice(y.size(1), 15, replace=False)
         k = self.gram_matrix(x)
-        for i in range(y.size(1)):
+        for i in range(3):
             k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
             k = k / np.trace(k)
         l, v = LA.eig(k)
