@@ -30,7 +30,7 @@ classes = ('plane', 'car', 'bird', 'cat',
 #images, labels = dataiter.next()
 
 from VGG16 import VGG16
-model = VGG16(10, nn.ReLU())
+model = VGG16(10, nn.ReLU()).cuda()
 #out, conv_layers = model(images)
 #
 #MI = []
@@ -58,7 +58,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 
 for epoch in range(5):
-
+    print('Epoch: ', epoch)
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         
