@@ -98,6 +98,6 @@ for epoch in range(5):
 #            _, predicted = torch.max(outputs, 1)
 #            print((predicted == labels.cuda()).sum().item())
             for layers in conv_layers:
-                print(model.mutual_information(images, layers.cpu()))
+                print(model.mutual_information(inputs, layers.cpu()))
 
 print('Finished Training')
