@@ -158,7 +158,7 @@ class VGG16(nn.Module):
             init.constant_(m.bias.data, 0)
 
     def gram_matrix(self, x):
-        N = (1/x.size(0))
+
 #        sigma_x = 5*x.size(0)**(-1/(x.size(1)*x.size(2)))
         x = x.view(x.size(0), -1).data.numpy()
         x = squareform(pdist(x, 'euclidean'))
@@ -172,7 +172,7 @@ class VGG16(nn.Module):
         l, v = LA.eig(gram_m)
         lambda_x = np.abs(l)
 
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return gram_m#(1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
     def joint_renyi_conv(self, x):
         alpha = 1.01
@@ -183,7 +183,6 @@ class VGG16(nn.Module):
             k = k / np.trace(k)
         l, v = LA.eig(k)
         lambda_x = np.abs(l)
-        print(lambda_x)
 
         return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
 
