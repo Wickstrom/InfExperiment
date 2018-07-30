@@ -104,7 +104,8 @@ for epoch in range(3):
         optimizer.step()
         cost_temp.append(loss.cpu().data.numpy())
     cost.append(np.mean(cost_temp))
+    print(cost[-1])
 
 
 print('Finished Training')
-np.savez_compressed('MI_cifar_10', a=mi_mat)
+np.savez_compressed('MI_cifar_10', a=mi_mat, b=cost)
