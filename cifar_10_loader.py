@@ -108,4 +108,4 @@ for epoch in range(100):
 
 
 print('Finished Training')
-np.savez_compressed('MI_cifar_10_1', a=mi_mat, b=cost)
+np.savez_compressed('MI_cifar_10', a=mi_mat, b=cost)
