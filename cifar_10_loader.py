@@ -68,7 +68,7 @@ optimizer = torch.optim.Adam(model.parameters())
 cost = []
 test = []
 
-for epoch in range(3):
+for epoch in range(100):
     print('Epoch: ', epoch)
     dataiter = iter(testloader)
     inputs, labels = dataiter.next()
@@ -108,4 +108,4 @@ for epoch in range(3):
 
 
 print('Finished Training')
-np.savez_compressed('MI_cifar_10', a=mi_mat, b=cost)
+np.savez_compressed('MI_cifar_10_1', a=mi_mat, b=cost)
