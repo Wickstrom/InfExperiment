@@ -59,19 +59,23 @@ for i, layer in enumerate(layers, 0):
     mi_mat[0, 0, i+1] = model.mutual_information(inputs, layer.cpu())
 
 for i in range(16):
-    for j in range(i,16):
+    for j in range(i, 16):
         mi_mat[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 
-for epoch in range(50):
+cost = []
+test = []
+
+for epoch in range(3):
     print('Epoch: ', epoch)
     dataiter = iter(testloader)
     inputs, labels = dataiter.next()
     outputs, layers = model(inputs.cuda())
 
     mi_mat_temp = np.zeros((1, 17, 17))
+    cost_temp = []
     
     for i, layer in enumerate(layers, 0):
         
@@ -98,6 +102,8 @@ for epoch in range(50):
         loss = criterion(outputs, labels.cuda())
         loss.backward()
         optimizer.step()
+        cost_temp.append(loss.cpu().data.numpy())
+    cost.append(np.mean(cost_temp))
 
 
 print('Finished Training')
