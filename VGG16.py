@@ -168,63 +168,48 @@ class VGG16(nn.Module):
 
     def gram_matrix(self, x):
 
-#        sigma_x = 5*x.size(0)**(-1/(x.size(1)*x.size(2)))
-        x = x.view(x.size(0), -1).data.numpy()
-        x = squareform(pdist(x, 'euclidean'))
-        sigma_x = np.mean(np.mean(np.sort(x[:, :10], 1)))
-        x = scipy.exp(-x ** 2 / sigma_x ** 2)
-        return x
+#        sigma = 5*x.size(0)**(-1/(x.size(1)*x.size(2)))
+
+        if x.dim() == 2:
+            k = x.data.numpy()
+            k = squareform(pdist(k, 'euclidean'))
+            sigma = np.mean(np.mean(np.sort(k[:, :10], 1)))
+            k = scipy.exp(-k ** 2 / sigma ** 2)
+            k = k / np.float64(np.trace(k))
+        if x.dim() == 4:
+            k = x[:, 0].view(x.size(0), -1).data.numpy()
+            k = squareform(pdist(k, 'euclidean'))
+            sigma = np.mean(np.mean(np.sort(k[:, :10], 1)))
+            k = scipy.exp(-k ** 2 / sigma ** 2)
+            for i in range(x.size(1)-1):
+                k_temp = x[:, i+1].view(x.size(0), -1).data.numpy()
+                k_temp = squareform(pdist(k_temp, 'euclidean'))
+                sigma = np.mean(np.mean(np.sort(k_temp[:, :10], 1)))
+                k = np.multiply(k, scipy.exp(-k_temp ** 2 / sigma ** 2))
+
+            k = k / np.float64(np.trace(k))
+        return k
 
     def renyi(self, x):
         alpha = 1.01
-        N = 1/np.float32(x.size(0))
-        gram_m = N*self.gram_matrix(x)
-        l, v = LA.eig(gram_m)
-        lambda_x = np.abs(l)
-
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
-
-    def joint_renyi_conv(self, x):
-        alpha = 1.01
-        k = self.gram_matrix(x[:, 0, :, :])
-        for i in range(x.size(1)-1):
-            k = np.multiply(k, self.gram_matrix(x[:, i+1, :, :]))
-        k = k / np.float32(np.trace(k))
+        k = self.gram_matrix(x)
         l, v = LA.eig(k)
-        lambda_x = np.abs(l)
+        lambda_k = np.abs(l)
 
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return (1/(1-alpha))*np.log2(np.sum(lambda_k**alpha))
 
-    def joint_renyi_fc(self, x, y):
+    def joint_renyi(self, x, y):
         alpha = 1.01
         k_x = self.gram_matrix(x)
         k_y = self.gram_matrix(y)
         k = np.multiply(k_x, k_y)
-        k = k / np.float32(np.trace(k))
+        k = k / np.float64(np.trace(k))
+
         l, v = LA.eig(k)
-        lambda_x = np.abs(l)
+        lambda_k = np.abs(l)
 
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
-
-    def joint_renyi_all(self, x, y):
-        alpha = 1.01
-        k = self.gram_matrix(x)
-        for i in range(y.size(1)):
-            k = np.multiply(k, self.gram_matrix(y[:, i, :, :]))
-        k = k / np.float32(np.trace(k))
-        l, v = LA.eig(k)
-        lambda_x = np.abs(l)
-
-        return (1/(1-alpha))*np.log2(np.sum(lambda_x**alpha))
+        return (1/(1-alpha))*np.log2(np.sum(lambda_k**alpha))
 
     def mutual_information(self, x, y):
 
-        if y.dim() == 4:
-            return (self.renyi(x) +
-                    self.joint_renyi_conv(y) -
-                    self.joint_renyi_all(x, y))
-
-        if y.dim() == 2:
-            return (self.renyi(x) +
-                    self.renyi(x) -
-                    self.joint_renyi_fc(x, y))
+        return self.renyi(x)+self.renyi(y)-self.joint_renyi(x, y)

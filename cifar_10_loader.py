@@ -17,7 +17,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=300,
 
 testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                        download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=20,
+testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                          shuffle=False, num_workers=2)
 
 classes = ('plane', 'car', 'bird', 'cat',
@@ -36,19 +36,27 @@ model = VGG16(10, nn.ReLU()).cuda()
 
 
 # %%
-
-#x = conv_layers[0]
-#k = model.gram_matrix(x[:, 0, :, :])
 #
-#for i in range(x.size(1)-1):
-#    k = np.multiply(k, model.gram_matrix(x[:, i+1, :, :]))
-#    k = k /np.trace(k)
-#l, v = LA.eig(k)
-#lambda_x = np.abs(l)
+#mi_mat = np.zeros((1, 17, 17))
+#j_mat = np.zeros((1, 17, 17))
+#
+#for i, layer in enumerate(layers, 0):
+#
+#    mi_mat[0, 0, 0] = model.mutual_information(images, images)
+#    mi_mat[0, 0, i+1] = model.mutual_information(images, layer.cpu())
+#    
+#    j_mat[0, 0, 0] = model.joint_renyi(images, images)
+#    j_mat[0, 0, i+1] = model.joint_renyi(images, layer.cpu())
+#
+#for i in range(16):
+#    for j in range(i, 16):
+#        mi_mat[0, i+1, j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu())
+#        j_mat[0, i+1, j+1] = model.joint_renyi(layers[i].cpu(), layers[j].cpu()) 
 
 # %%
 
 mi_mat = np.zeros((1, 17, 17))
+j_mat = np.zeros((1, 17, 17))
 dataiter = iter(testloader)
 inputs, labels = dataiter.next()
 outputs, layers = model(inputs.cuda())
@@ -58,9 +66,13 @@ for i, layer in enumerate(layers, 0):
     mi_mat[0, 0, 0] = model.mutual_information(inputs, inputs)
     mi_mat[0, 0, i+1] = model.mutual_information(inputs, layer.cpu())
 
+    j_mat[0, 0, 0] = model.joint_renyi(inputs, inputs)
+    j_mat[0, 0, i+1] = model.joint_renyi(inputs, layer.cpu())
+
 for i in range(16):
     for j in range(i, 16):
-        mi_mat[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
+        mi_mat[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu())
+        j_mat[0, i+1, j+1] = model.joint_renyi(layers[i].cpu(), layers[j].cpu()) 
 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
@@ -75,19 +87,25 @@ for epoch in range(100):
     outputs, layers = model(inputs.cuda())
 
     mi_mat_temp = np.zeros((1, 17, 17))
+    j_mat_temp = np.zeros((1, 17, 17))
     cost_temp = []
     
     for i, layer in enumerate(layers, 0):
         
         mi_mat_temp[0, 0, 0] = model.mutual_information(inputs, inputs)    
         mi_mat_temp[0, 0, i+1] = model.mutual_information(inputs, layer.cpu())
+
+        j_mat_temp[0, 0, 0] = model.joint_renyi(inputs, inputs)
+        j_mat_temp[0, 0, i+1] = model.joint_renyi(inputs, layer.cpu())
     
     for i in range(16):
         for j in range(i,16):
             mi_mat_temp[0, i+1,j+1] = model.mutual_information(layers[i].cpu(), layers[j].cpu()) 
+            j_mat_temp[0, i+1, j+1] = model.joint_renyi(layers[i].cpu(), layers[j].cpu()) 
             
     if epoch != 0:
         mi_mat = np.concatenate((mi_mat, mi_mat_temp))
+        j_mat = np.concatenate((j_mat, j_mat_temp))
 
     for i, data in enumerate(trainloader, 0):
 
@@ -108,4 +126,4 @@ for epoch in range(100):
 
 
 print('Finished Training')
-np.savez_compressed('MI_cifar_10', a=mi_mat, b=cost)
+np.savez_compressed('MI_cifar_10', a=mi_mat, b=j_mat, c=cost)
