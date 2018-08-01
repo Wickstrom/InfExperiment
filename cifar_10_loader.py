@@ -12,7 +12,7 @@ transform = transforms.Compose(
 
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=300,
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=200,
                                           shuffle=True, num_workers=2)
 
 testset = torchvision.datasets.CIFAR10(root='./data', train=False,
