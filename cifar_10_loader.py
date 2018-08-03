@@ -80,7 +80,7 @@ optimizer = torch.optim.Adam(model.parameters())
 cost = []
 test = []
 
-for epoch in range(100):
+for epoch in range(10):
     print('Epoch: ', epoch)
     dataiter = iter(testloader)
     inputs, labels = dataiter.next()
