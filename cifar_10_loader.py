@@ -121,8 +121,8 @@ for epoch in range(10):     # Run for 10 epochs
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs, layers = model(inputs.cuda())
-        loss = criterion(outputs, labels.cuda())
+        outputs, layers = model(inputs.cuda())  # If you wnat to run on cpu
+        loss = criterion(outputs, labels.cuda())# remove ".cuda()"
         loss.backward()
         optimizer.step()
         cost_temp.append(loss.cpu().data.numpy()) # Append training cost
